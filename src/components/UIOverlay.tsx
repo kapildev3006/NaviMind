@@ -48,7 +48,7 @@ export const UIOverlay = () => {
   useEffect(() => {
     const unsub = useSimulationStore.subscribe((state) => {
       setDisplayTime(state.time)
-      setTelemetry(state.droneTelemetry)
+      setTelemetry(state.robotTelemetry || state.droneTelemetry)
     })
     return () => unsub()
   }, [])
@@ -150,7 +150,7 @@ export const UIOverlay = () => {
             [ TAKE MANUAL CONTROL ]
           </button>
           <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', fontFamily: 'monospace' }}>
-            Or press W / A / S / D or Arrow Keys to steer immediately
+            Or press W / S / A / D, Q / E (Strafe), or Shift (Sprint) to take over
           </span>
         </div>
       ) : (
@@ -215,7 +215,7 @@ export const UIOverlay = () => {
             [ 🤖 START AUTO NAVIGATION TO TARGET ]
           </button>
           <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', fontFamily: 'monospace' }}>
-            Steer with W (Forward), S (Backward), A/D (Turn Left/Right)
+            Controls: W/S (Move), A/D (Turn), Q/E (Strafe), Shift (Sprint)
           </span>
         </div>
       )}

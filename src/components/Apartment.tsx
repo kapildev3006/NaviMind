@@ -2,14 +2,17 @@
 
 import React, { useMemo } from 'react'
 import { useGLTF } from '@react-three/drei'
-import { RigidBody } from '@react-three/rapier'
+import { RigidBody, MeshCollider } from '@react-three/rapier'
 import * as THREE from 'three'
 
 export const Apartment = () => {
   const { scene } = useGLTF('/apartment.glb')
 
-  // Clone scene or configure materials and shadow properties
-  useMemo(() => {
+  // Separate collision meshes (walls, floor, furniture) from visual-only meshes (ceiling)
+  const { collisionChildren, visualOnlyChildren } = useMemo(() => {
+    const col: THREE.Object3D[] = []
+    const vis: THREE.Object3D[] = []
+
     scene.traverse((child: any) => {
       if (child.isMesh) {
         child.castShadow = true
@@ -22,11 +25,34 @@ export const Apartment = () => {
         }
       }
     })
+
+    // Teto is the ceiling (Y > 2.4m) which is visual-only and excluded from robot collisions
+    scene.children.forEach((child) => {
+      if (child.name === 'Teto') {
+        vis.push(child)
+      } else {
+        col.push(child)
+      }
+    })
+
+    return { collisionChildren: col, visualOnlyChildren: vis }
   }, [scene])
 
   return (
     <group position={[0, 0, 0]}>
-      <primitive object={scene} />
+      {/* Visual-only non-collidable geometry (e.g. ceiling) */}
+      {visualOnlyChildren.map((obj) => (
+        <primitive key={obj.uuid} object={obj} />
+      ))}
+
+      {/* Structural walls, doorways, floor, and solid furniture with trimesh colliders */}
+      <RigidBody type="fixed" colliders={false}>
+        {collisionChildren.map((obj) => (
+          <MeshCollider key={obj.uuid} type="trimesh">
+            <primitive object={obj} />
+          </MeshCollider>
+        ))}
+      </RigidBody>
     </group>
   )
 }

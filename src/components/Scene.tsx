@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef } from 'react'
+import React, { useRef, Suspense } from 'react'
 import { Sky, Environment } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { Robot } from './Robot'
@@ -50,7 +50,9 @@ export const Scene = () => {
     <>
       {/* Sky and City Environment for Window Visibility */}
       <Sky sunPosition={[25, 40, 20]} turbidity={0.1} rayleigh={0.5} />
-      <Environment preset="city" />
+      <Suspense fallback={null}>
+        <Environment preset="city" />
+      </Suspense>
 
       {/* Ambient and Interior Lighting */}
       <ambientLight intensity={0.6} color="#fff8f0" />

@@ -32,6 +32,8 @@ interface SimulationState {
   isPickingUp: boolean
   setIsPickingUp: (picking: boolean) => void
 
+  robotWorldPos: [number, number, number]
+  setRobotWorldPos: (pos: [number, number, number]) => void
   droneWorldPos: [number, number, number]
   setDroneWorldPos: (pos: [number, number, number]) => void
 
@@ -41,6 +43,8 @@ interface SimulationState {
   scannedHistory: ScannedObjectInfo[]
   addScannedObject: (target: ScannedObjectInfo) => void
 
+  robotTelemetry: { altitude: number; speed: number; heading: number }
+  setRobotTelemetry: (telemetry: { altitude: number; speed: number; heading: number }) => void
   droneTelemetry: { altitude: number; speed: number; heading: number }
   setDroneTelemetry: (telemetry: { altitude: number; speed: number; heading: number }) => void
 
@@ -80,8 +84,10 @@ export const useSimulationStore = create<SimulationState>((set) => ({
   isPickingUp: false,
   setIsPickingUp: (isPickingUp) => set({ isPickingUp }),
 
-  droneWorldPos: [0, 0.35, 3.2],
-  setDroneWorldPos: (droneWorldPos) => set({ droneWorldPos }),
+  robotWorldPos: [0.6, 0.24, 2.6],
+  setRobotWorldPos: (pos) => set({ robotWorldPos: pos, droneWorldPos: pos }),
+  droneWorldPos: [0.6, 0.24, 2.6],
+  setDroneWorldPos: (pos) => set({ robotWorldPos: pos, droneWorldPos: pos }),
 
   activeScanTarget: null,
   setActiveScanTarget: (activeScanTarget) => set({ activeScanTarget }),
@@ -95,8 +101,10 @@ export const useSimulationStore = create<SimulationState>((set) => ({
       return { scannedHistory: [target, ...state.scannedHistory] }
     }),
 
-  droneTelemetry: { altitude: 0.35, speed: 0, heading: 0 },
-  setDroneTelemetry: (droneTelemetry) => set({ droneTelemetry }),
+  robotTelemetry: { altitude: 0, speed: 0, heading: 0 },
+  setRobotTelemetry: (telemetry) => set({ robotTelemetry: telemetry, droneTelemetry: telemetry }),
+  droneTelemetry: { altitude: 0, speed: 0, heading: 0 },
+  setDroneTelemetry: (telemetry) => set({ robotTelemetry: telemetry, droneTelemetry: telemetry }),
 
   time: 14,
   timeSpeed: 1,
@@ -117,3 +125,7 @@ export const useSimulationStore = create<SimulationState>((set) => ({
   searchMode: 'MANUAL',
   setSearchMode: (searchMode) => set({ searchMode, autoScan: searchMode === 'AUTO', targetLocked: false }),
 }))
+
+if (typeof window !== 'undefined') {
+  ;(window as any).__simStore = useSimulationStore
+}
