@@ -6,6 +6,7 @@ import { useFrame } from '@react-three/fiber'
 import { Robot } from './Robot'
 import { Apartment } from './Apartment'
 import { ApartmentObjects } from './ApartmentObjects'
+import { NavigationVisualizer } from './NavigationVisualizer'
 import { useSimulationStore } from '@/store/useSimulationStore'
 import * as THREE from 'three'
 
@@ -72,6 +73,9 @@ export const Scene = () => {
 
       {/* Autonomous BD-1 Detection Robot */}
       <Robot />
+
+      {/* Navigation Graph & Route Visualizer (toggled by debugMode) */}
+      <NavigationVisualizer />
     </>
   )
 }
